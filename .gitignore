@@ -5,5 +5,4 @@ __pycache__/
 *.pyc
 
 main2.py
-app/
 config.py
