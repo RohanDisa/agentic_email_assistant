@@ -1,0 +1,10 @@
+email_assistant/
+venv/
+.env
+__pycache__/
+*.pyc
+
+main2.py
+tp.sql
+app/config.py
+
