@@ -3,6 +3,8 @@
 from sqlalchemy import Column, Integer, String, Text, ForeignKey, DateTime
 from sqlalchemy.ext.declarative import declarative_base
 from datetime import datetime
+from sqlalchemy import Boolean, Text
+from sqlalchemy import Float
 
 Base = declarative_base()
 
@@ -25,3 +27,17 @@ class Message(Base):
     subject = Column(Text)
     body = Column(Text)
     sent_at = Column(DateTime)
+    # needs_reply = Column(Boolean, default=None)
+    # reply_draft = Column(Text, nullable=True)
+
+class AIMessageAnalysis(Base):
+    __tablename__ = "ai_message_analysis"
+    id = Column(Integer, primary_key=True)
+    message_id = Column(String, ForeignKey("messages.message_id"), unique=True)
+    
+    needs_reply = Column(Boolean, default=None, nullable=True)
+    summary = Column(Text, nullable=True)
+    reply_draft = Column(Text, nullable=True)
+    reply_confidence = Column(Float, nullable=True)
+    processed_at = Column(DateTime, default=datetime.utcnow)
+

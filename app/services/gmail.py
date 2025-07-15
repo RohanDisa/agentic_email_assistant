@@ -36,7 +36,8 @@ def store_email_data(thread_id, msg_detail):
         )
         db.add(message)
         db.commit()
-    except IntegrityError:
+    except IntegrityError as e:
         db.rollback()  # Skip duplicates
+        print(f"[IntegrityError] Failed to insert message {msg_detail['id']}: {e}")
     finally:
         db.close()
