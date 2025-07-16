@@ -1,7 +1,7 @@
 from app.db.session import SessionLocal
 from app.models.email import Message
 from datetime import datetime
-from services.ai_stuff import flag_reply_needed, generate_reply
+# from services.ai_stuff import flag_reply_needed, generate_reply
 
 def fetch_top_30_messages():
     db = SessionLocal()
@@ -11,7 +11,7 @@ def fetch_top_30_messages():
     finally:
         db.close()
 
-def save_ai_analysis(message_id, needs_reply, reply_draft):
+def save_ai_analysis(message_id, needs_reply, reply_draft, todos):
     from app.models.email import AIMessageAnalysis  # import here to avoid circular issues
     db = SessionLocal()
     try:
@@ -21,6 +21,7 @@ def save_ai_analysis(message_id, needs_reply, reply_draft):
             db.add(analysis)
         analysis.needs_reply = needs_reply
         analysis.reply_draft = reply_draft
+        analysis.todo - todos
         analysis.processed_at = datetime.utcnow()
         db.commit()
     except Exception as e:

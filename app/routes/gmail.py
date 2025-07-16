@@ -6,8 +6,9 @@ from google_auth_oauthlib.flow import Flow
 from app.config import settings
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
+from app.services.ai_stuff import flag_reply_needed, generate_reply, extract_todos_from_message
 from ..scripts.preprocess_msgs import fetch_top_30_messages, save_ai_analysis
-from ..services.ai_stuff import flag_reply_needed, generate_reply
+
 
 router = APIRouter()
 
@@ -126,15 +127,35 @@ async def list_messages():
 @router.get("/ai_analysis")
 async def ai_analysis():
     messages = fetch_top_30_messages()
-    # processed_count = 0
+    processed = []
+
     for msg in messages:
         message_data = {
             "sender": msg.sender,
             "subject": msg.subject,
             "body": msg.body,
         }
+
         needs_reply = flag_reply_needed(message_data)
         reply_draft = generate_reply(message_data) if needs_reply else None
+        todos = extract_todos_from_message(message_data)
 
-        save_ai_analysis(msg.message_id, needs_reply, reply_draft)
-        return {"Processed message {msg.message_id}: needs_reply={needs_reply}"}
+        print("The generated draft is", reply_draft)
+        print("Extracted To-Dos:", todos)
+
+        save_ai_analysis(
+            message_id=msg.message_id,
+            needs_reply=needs_reply,
+            reply_draft=reply_draft,
+            todos=todos  # Make sure your save_ai_analysis accepts this
+        )
+
+        processed.append({
+            "message_id": msg.message_id,
+            "needs_reply": needs_reply,
+            "reply_draft": reply_draft,
+            "todos": todos
+        })
+
+    return {"processed_messages": processed}
+
