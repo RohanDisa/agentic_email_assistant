@@ -131,7 +131,7 @@ const ToDoList = () => {
       setTodos(data.todos);
     } catch (err) {
       setError(err.message);
-      // Fallback demo data for development
+      
       setTodos([
         {
           id: 1,

@@ -2,6 +2,8 @@ import { useState } from "react";
 import styled, { keyframes, createGlobalStyle } from "styled-components";
 import ToDoList from './Components/ToDoList';
 import ReplyAssistant from './components/ReplyAssistant';
+import ChatDraft from './components/ChatDraft';
+import EmailSearchChat from './Components/EmailSearchChat';
 // Global styles to reset any default margins/padding
 const GlobalStyle = createGlobalStyle`
   * {
@@ -341,19 +343,19 @@ const ComponentDescription = styled.p`
 //   </ComponentContent>
 // );
 
-const ChatDraft = () => (
-  <ComponentContent>
-    <ComponentTitle>Chat to Draft</ComponentTitle>
-    <ComponentDescription>Convert conversations to drafts</ComponentDescription>
-  </ComponentContent>
-);
+// const ChatDraft = () => (
+//   <ComponentContent>
+//     <ComponentTitle>Chat to Draft</ComponentTitle>
+//     <ComponentDescription>Convert conversations to drafts</ComponentDescription>
+//   </ComponentContent>
+// );
 
-const EmailSearchChat = () => (
-  <ComponentContent>
-    <ComponentTitle>Ask About Emails</ComponentTitle>
-    <ComponentDescription>Search and query your emails</ComponentDescription>
-  </ComponentContent>
-);
+// const EmailSearchChat = () => (
+//   <ComponentContent>
+//     <ComponentTitle>Ask About Emails</ComponentTitle>
+//     <ComponentDescription>Search and query your emails</ComponentDescription>
+//   </ComponentContent>
+// );
 
 const TABS = [
   { name: "✅ To-Dos", component: <ToDoList /> },

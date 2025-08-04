@@ -1,6 +1,6 @@
 # app/routes/gmail.py
 
-from fastapi import APIRouter, Request
+from fastapi import APIRouter, Request, HTTPException
 from fastapi.responses import RedirectResponse
 from google_auth_oauthlib.flow import Flow
 from app.config import settings
@@ -10,8 +10,11 @@ from ..services.ai_stuff import flag_reply_needed, generate_reply, extract_todos
 from ..scripts.preprocess_msgs import fetch_top_30_messages, save_ai_analysis
 from ..scripts.preprocess_msgs import get_todos_from_db
 from ..scripts.preprocess_msgs import get_reply_drafts_from_db
-
-
+from ..services.ai_stuff import generate_reply_from_conversation, fetchRecentEmails, buildQAPrompt, answerQuestionWithLLM
+from pydantic import BaseModel
+from typing import List, Dict, Any
+# from ..scripts.preprocess_msgs import chat_llm
+from fastapi.responses import JSONResponse
 
 
 router = APIRouter()
@@ -185,3 +188,31 @@ async def get_todos():
         traceback.print_exc()
         return {"error": str(e)}
 
+class ChatRequest(BaseModel):
+    messages: list[dict]  
+
+@router.post("/chat")
+async def chat_llm(request: Request):
+    data = await request.json()
+    messages = data.get("messages", [])
+    # Generate AI reply using full conversation
+    reply = generate_reply_from_conversation(messages)
+    return JSONResponse({"reply": reply})
+
+class EmailQARequest(BaseModel):
+    # user_id: str
+    question: str
+
+@router.post("/email-qa")
+async def email_qa(request: EmailQARequest):
+    print("Hello")
+    emails = fetchRecentEmails(count=30)
+
+    if not emails:
+        raise HTTPException(status_code=404, detail="No emails found.")
+
+    prompt = buildQAPrompt(emails, request.question)
+
+    answer = answerQuestionWithLLM(prompt)
+
+    return {"answer": answer}

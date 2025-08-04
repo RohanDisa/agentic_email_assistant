@@ -4,6 +4,7 @@ from app.backend.models.email import AIMessageAnalysis
 from datetime import datetime
 import json
 import logging
+from app.backend.models.email import AIMessageAnalysis
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG) # Ensure debug messages are visible
@@ -26,7 +27,7 @@ def fetch_top_30_messages():
         db.close()
 
 def save_ai_analysis(message_id, needs_reply, reply_draft, todos):
-    from app.backend.models.email import AIMessageAnalysis # import here to avoid circular issues
+     
     db = SessionLocal()
     try:
         analysis = db.query(AIMessageAnalysis).filter_by(message_id=message_id).first()
@@ -70,10 +71,12 @@ def get_todos_from_db():
             # --- NEW LOG HERE ---
             # logger.debug(f"GET_TODOS_FROM_DB: Processing row for message ID {row.message_id}. Raw 'todo' value from DB: '{row.todo}' (Type: {type(row.todo)})")
 
-            if row.todo: # This check is technically redundant due to the filter, but harmless
+            if row.todo != "{}": # This check is technically redundant due to the filter, but harmless
                 try:
+                    print(row.todo)
                     parsed_todo = json.loads(row.todo)
-                    logger.debug(f"Successfully parsed todo JSON for message ID: {parsed_todo}")
+                    # print(parsed_todo)
+                    # logger.debug(f"Successfully parsed todo JSON for message ID: {parsed_todo}")
                 except json.JSONDecodeError:
                     parsed_todo = {"title": row.todo}  # fallback if not proper JSON
                     # logger.warning(f"Failed to parse todo JSON for message ID {row.message_id}. Falling back to title: '{row.todo}'")

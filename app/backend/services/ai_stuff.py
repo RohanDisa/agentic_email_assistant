@@ -8,8 +8,12 @@ from app.config import settings
 from datetime import datetime
 import json # Import json for serialization
 import logging # Import logging
+from sqlalchemy.orm import Session
+from app.backend.models import email  # your DB session dependency
+from fastapi import Depends
+from app.backend.models.email import Message
+from app.backend.db.session import SessionLocal
 
-# Setup logging for this module
 ai_logger = logging.getLogger(__name__)
 ai_logger.setLevel(logging.DEBUG) # Set to DEBUG to see all messages
 
@@ -105,7 +109,7 @@ JSON tasks:
                 {"role": "user", "content": prompt},
             ],
             model="llama-3.3-70b-versatile",
-            temperature=0.0 # Keep low for structured output
+            temperature=0.0 
         )
 
         raw_ai_output = completion.choices[0].message.content.strip()
@@ -141,4 +145,85 @@ JSON tasks:
 
     except Exception as e:
         ai_logger.error(f"Error during AI model call for todos: {e}. Returning empty array string.", exc_info=True)
-        return "[]" # CRITICAL: Return an empty JSON array string on AI call failure
+        return "[]" 
+
+def generate_reply_from_conversation(messages: list[dict]) -> str:
+    system_prompt = (
+        "You are an expert assistant helping the user draft professional, polite, "
+        "and concise email replies based on their chat messages. "
+        "Always keep the tone courteous and clear. "
+        "If any important information is missing, provide placeholders or ask clarifying questions. "
+        "Adapt to the context of the conversation and maintain coherence."
+    )
+    try:
+        completion = client.chat.completions.create(
+            messages=[{"role": "system", "content": system_prompt}] + messages,
+            model="llama-3.3-70b-versatile",
+            temperature=0.7,
+        )
+        return completion.choices[0].message.content.strip()
+    except Exception as e:
+        ai_logger.error(f"Error generating reply: {e}", exc_info=True)
+        return "Error generating reply. Please try again."
+    
+
+def fetchRecentEmails(count: int = 5) -> list[dict]:
+    """
+    Fetch the most recent 'count' emails for the given user from the 'messages' table.
+    """
+    db = SessionLocal()
+    emails = (
+        db.query(Message.sender, Message.subject, Message.body)
+        #   .order_by(Message.date.desc())
+          .limit(count)
+          .all()
+    )
+    print("The emails are", emails)
+    result = [
+        {
+            "sender": email.sender,
+            "subject": email.subject,
+            "body": email.body,
+        }
+        for email in emails
+    ]
+
+    return result
+    
+
+def buildQAPrompt(emails: list[dict], question: str) -> str:
+    email_texts = "\n\n".join(
+        f"Subject: {email['subject']}\nFrom: {email['sender']}\nBody: {email['body']}"
+        for email in emails
+    )
+    prompt = f"""
+You are an assistant that answers questions based on recent emails.
+
+Here are the recent emails:
+
+{email_texts}
+
+Question: {question}
+
+Answer the question based on the emails above. If you don’t know the answer, say “I don’t have that information.”
+"""
+    return prompt.strip()
+
+
+def answerQuestionWithLLM(prompt: str) -> str:
+    try:
+        completion = client.chat.completions.create(
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant."},
+                {"role": "user", "content": prompt},
+            ],
+            model="llama-3.3-70b-versatile",
+            temperature=0.0,  # deterministic answers
+        )
+        return completion.choices[0].message.content.strip()
+    except Exception as e:
+        ai_logger.error(f"Error answering question: {e}", exc_info=True)
+        return "Sorry, I couldn't answer that."
+
+
+
