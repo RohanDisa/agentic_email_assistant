@@ -7,10 +7,25 @@ This project transforms how users interact with their inbox by combining **task 
 
 ## 🚀 Features  
 
-- ✅ **Extract Todos from Emails** – Automatically identifies and organizes actionable tasks from incoming messages.  
-- 📬 **Smart Reply Generator** – Detects when an email requires a response and drafts context-aware replies.  
-- ✍️ **AI-Powered Email Composer** – Write professional emails by conversing directly with a large language model.  
-- 🔍 **Inbox Q&A** – Ask natural language questions about your inbox instead of manually searching (e.g., *“What meetings do I have tomorrow?”*).  
+- ✅ **Extract Todos from Emails**  
+  Automatically scans incoming emails to identify actionable tasks such as deadlines, meetings, or follow-ups.  
+  This eliminates the need for manual task tracking and helps users stay organized directly from their inbox.  
+
+- 📬 **Smart Reply Generator**  
+  Determines whether an email requires a reply and, if so, drafts a contextually relevant and professional response.  
+  This feature saves time by handling routine replies and ensures consistent communication tone.  
+
+- ✍️ **AI-Powered Email Composer**  
+  Allows users to draft new emails by conversing with the LLM in natural language.  
+  Instead of struggling to phrase a message, users can describe their intent (e.g., *“Write a polite follow-up about yesterday’s meeting”*) and receive a polished email instantly.  
+
+- 🔍 **Inbox Q&A**  
+  Provides a conversational interface to query the inbox using plain English.  
+  For example:  
+  - *“Show me all emails from my advisor last week.”*  
+  - *“What meetings are scheduled tomorrow?”*  
+  - *“Summarize unread emails from today.”*  
+  This reduces time spent searching manually and makes email management more intuitive. 
 
 ---
 
