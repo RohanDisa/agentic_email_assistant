@@ -1,4 +1,4 @@
-# 📧 MailMind — AI-Powered Email Assistant  
+# 📧 AI-Powered Email Assistant  
 
 An intelligent email assistant built with **React (Vite)**, **FastAPI**, **Redis**, and **Celery**, powered by **LLaMA-70B**.  
 This project transforms how users interact with their inbox by combining **task automation**, **smart replies**, and **natural language querying**.  
