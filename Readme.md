@@ -35,8 +35,6 @@ This project transforms how users interact with their inbox by combining **task 
 - **Backend**: Python + FastAPI + Uvicorn  
 - **AI Model**: LLaMA 80B  
 - **Task Queue**: Celery + Redis  
-- **Database**: (add if you use MongoDB/Postgres, otherwise remove this line)  
-- **Other**: REST APIs, JWT/Auth (if included)  
 
 ---
 
